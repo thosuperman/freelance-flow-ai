@@ -1,0 +1,575 @@
+// FreelanceFlow AI — relational schema
+//
+// Design notes (see docs/ARCHITECTURE.md for the full rationale):
+// - Money is stored as DECIMAL(14,2) and handled with decimal.js. Never floats.
+// - Agreed terms live in immutable ProposalVersion snapshots and approved ScopeChangeRequests.
+//   Project financial totals are always derived from those records plus verified PaymentTransactions.
+// - Uniqueness on provider ids (order, capture, webhook event) makes payment processing idempotent.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────── Auth (Better Auth) ─────────────────────────────
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  profile     FreelancerProfile?
+  clients     Client[]
+  projects    Project[]
+  aiAnalyses  AIAnalysis[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+// ───────────────────────────── Freelancer & clients ─────────────────────────────
+
+model FreelancerProfile {
+  userId          String    @id
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName    String?
+  defaultCurrency String    @default("USD") @db.VarChar(3)
+  /// Optional hourly rate. Used deterministically to price change requests; never invented by AI.
+  hourlyRate      Decimal?  @db.Decimal(14, 2)
+  isDemo          Boolean   @default(false)
+  demoExpiresAt   DateTime?
+  onboardedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name      String
+  email     String?
+  company   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects     Project[]
+  accessGrants ClientAccessGrant[]
+
+  @@index([ownerId])
+}
+
+// ───────────────────────────── Projects & scope ─────────────────────────────
+
+enum ProjectStatus {
+  DRAFT // terms editable by the freelancer
+  PROPOSED // a proposal version is awaiting client decision; terms locked
+  ACTIVE // proposal approved; terms change only via change requests
+  COMPLETED
+  CANCELLED
+}
+
+model Project {
+  id                 String        @id @default(cuid())
+  ownerId            String
+  owner              User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  clientId           String
+  client             Client        @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  title              String
+  description        String
+  currency           String        @db.VarChar(3)
+  /// The contract value the freelancer intends to propose. Milestones must sum to this before sending.
+  budget             Decimal       @db.Decimal(14, 2)
+  startDate          DateTime?
+  acceptanceCriteria String[]
+  status             ProjectStatus @default(DRAFT)
+  /// Provenance of the AI review (accepted / rejected assumptions). Informational only.
+  aiReview           Json?
+  sourceAnalysisId   String?       @unique
+  sourceAnalysis     AIAnalysis?   @relation("ProjectSourceAnalysis", fields: [sourceAnalysisId], references: [id], onDelete: SetNull)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  scopeItems      ScopeItem[]
+  milestones      Milestone[]
+  proposal        Proposal?
+  changeRequests  ScopeChangeRequest[]
+  paymentRequests PaymentRequest[]
+  accessGrants    ClientAccessGrant[]
+  approvals       Approval[]
+  auditEvents     AuditEvent[]
+  aiAnalyses      AIAnalysis[]         @relation("ProjectAnalyses")
+
+  @@index([ownerId, status])
+  @@index([clientId])
+}
+
+enum ScopeItemKind {
+  DELIVERABLE
+  EXCLUSION
+}
+
+enum ScopeOrigin {
+  PROPOSAL
+  CHANGE_REQUEST
+}
+
+model ScopeItem {
+  id              String              @id @default(cuid())
+  projectId       String
+  project         Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  kind            ScopeItemKind
+  origin          ScopeOrigin         @default(PROPOSAL)
+  title           String
+  description     String              @default("")
+  position        Int                 @default(0)
+  milestoneId     String?
+  milestone       Milestone?          @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  changeRequestId String?
+  changeRequest   ScopeChangeRequest? @relation(fields: [changeRequestId], references: [id], onDelete: Restrict)
+  createdAt       DateTime            @default(now())
+
+  @@index([projectId, kind])
+}
+
+enum MilestoneKind {
+  DEPOSIT // payable once the proposal is approved; no delivery needed
+  DELIVERY // payable once the client accepts submitted work
+  CHANGE_ORDER // created from an approved change request
+}
+
+enum TermsStatus {
+  DRAFT
+  APPROVED
+}
+
+enum WorkStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  SUBMITTED
+  CHANGES_REQUESTED
+  ACCEPTED
+}
+
+enum MilestonePaymentStatus {
+  UNPAID
+  REQUESTED
+  PROCESSING
+  PAID
+}
+
+model Milestone {
+  id                String                 @id @default(cuid())
+  projectId         String
+  project           Project                @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  position          Int
+  kind              MilestoneKind          @default(DELIVERY)
+  title             String
+  description       String                 @default("")
+  amount            Decimal                @db.Decimal(14, 2)
+  currency          String                 @db.VarChar(3)
+  dueDate           DateTime?
+  termsStatus       TermsStatus            @default(DRAFT)
+  workStatus        WorkStatus             @default(NOT_STARTED)
+  paymentStatus     MilestonePaymentStatus @default(UNPAID)
+  /// Whether client acceptance of submitted work is required before payment can be requested.
+  requiresDelivery  Boolean                @default(true)
+  submissionNote    String?
+  submittedAt       DateTime?
+  acceptedAt        DateTime?
+  changeRequestId   String?                @unique
+  changeRequest     ScopeChangeRequest?    @relation(fields: [changeRequestId], references: [id], onDelete: Restrict)
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  scopeItems      ScopeItem[]
+  paymentRequests PaymentRequest[]
+
+  @@index([projectId, position])
+}
+
+// ───────────────────────────── Proposals ─────────────────────────────
+
+model Proposal {
+  id                   String   @id @default(cuid())
+  projectId            String   @unique
+  project              Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  overview             String
+  timelineSummary      String   @default("")
+  paymentConditions    String   @default("")
+  revisionLimit        Int      @default(2)
+  revisionPolicy       String   @default("")
+  changeRequestPolicy  String   @default("")
+  acceptanceStatement  String   @default("")
+  aiGenerated          Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  versions ProposalVersion[]
+}
+
+enum ProposalVersionStatus {
+  PENDING // sent to the client, awaiting decision
+  APPROVED
+  REVISION_REQUESTED
+  WITHDRAWN
+}
+
+/// Immutable record of exactly what the client was asked to approve.
+model ProposalVersion {
+  id          String                @id @default(cuid())
+  proposalId  String
+  proposal    Proposal              @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  version     Int
+  snapshot    Json
+  /// SHA-256 of the canonical snapshot JSON. Approval must quote this hash.
+  termsHash   String                @db.VarChar(64)
+  totalAmount Decimal               @db.Decimal(14, 2)
+  currency    String                @db.VarChar(3)
+  status      ProposalVersionStatus @default(PENDING)
+  sentAt      DateTime              @default(now())
+  decidedAt   DateTime?
+  clientNote  String?
+
+  @@unique([proposalId, version])
+  @@index([proposalId, status])
+}
+
+// ───────────────────────────── Scope changes ─────────────────────────────
+
+enum ChangeRequestStatus {
+  DRAFT
+  PENDING_CLIENT
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+enum BillingTiming {
+  ON_APPROVAL
+  ON_DELIVERY
+}
+
+model ScopeChangeRequest {
+  id            String              @id @default(cuid())
+  projectId     String
+  project       Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  number        Int
+  title         String
+  description   String
+  /// The client's message that triggered the change (untrusted text).
+  requestText   String
+  /// Array of { title, description } — materialised into ScopeItems on approval.
+  deliverables  Json
+  amount        Decimal             @db.Decimal(14, 2)
+  currency      String              @db.VarChar(3)
+  billingTiming BillingTiming       @default(ON_APPROVAL)
+  dueDate       DateTime?
+  status        ChangeRequestStatus @default(DRAFT)
+  /// Hash of the commercial terms, set when sent; approval must quote it.
+  termsHash     String?             @db.VarChar(64)
+  analysisId    String?
+  analysis      AIAnalysis?         @relation(fields: [analysisId], references: [id], onDelete: SetNull)
+  sentAt        DateTime?
+  decidedAt     DateTime?
+  clientNote    String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  scopeItems ScopeItem[]
+  milestone  Milestone?
+
+  @@unique([projectId, number])
+  @@index([projectId, status])
+}
+
+// ───────────────────────────── Approvals & access ─────────────────────────────
+
+enum ApprovalSubject {
+  PROPOSAL_VERSION
+  CHANGE_REQUEST
+  MILESTONE_DELIVERY
+}
+
+enum ApprovalDecision {
+  APPROVED
+  REJECTED
+  CHANGES_REQUESTED
+}
+
+enum ActorType {
+  FREELANCER
+  CLIENT
+  SYSTEM
+  PAYPAL
+}
+
+/// Append-only log of every party decision on commercial terms or deliveries.
+model Approval {
+  id            String           @id @default(cuid())
+  projectId     String
+  project       Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  subjectType   ApprovalSubject
+  subjectId     String
+  decision      ApprovalDecision
+  actorType     ActorType
+  actorName     String
+  actorEmail    String?
+  accessGrantId String?
+  termsHash     String?          @db.VarChar(64)
+  amount        Decimal?         @db.Decimal(14, 2)
+  currency      String?          @db.VarChar(3)
+  comment       String?
+  userAgent     String?
+  createdAt     DateTime         @default(now())
+
+  @@index([projectId, subjectType, subjectId])
+}
+
+/// Tokenised client portal access. Only the SHA-256 of the token is used for lookup;
+/// the token is also stored AES-256-GCM encrypted so the freelancer can re-copy the link.
+model ClientAccessGrant {
+  id              String    @id @default(cuid())
+  projectId       String
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  clientId        String
+  client          Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  tokenHash       String    @unique @db.VarChar(64)
+  tokenCiphertext String
+  expiresAt       DateTime
+  revokedAt       DateTime?
+  lastUsedAt      DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([projectId])
+}
+
+// ───────────────────────────── Payments ─────────────────────────────
+
+enum PaymentRequestStatus {
+  OPEN
+  PROCESSING // capture returned PENDING; waiting for PayPal to complete it
+  PAID
+  CANCELLED
+}
+
+model PaymentRequest {
+  id            String               @id @default(cuid())
+  projectId     String
+  project       Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestoneId   String
+  milestone     Milestone            @relation(fields: [milestoneId], references: [id], onDelete: Restrict)
+  /// Immutable once created. The checkout amount is always derived from here, never from the browser.
+  amount        Decimal              @db.Decimal(14, 2)
+  currency      String               @db.VarChar(3)
+  description   String
+  dueDate       DateTime
+  status        PaymentRequestStatus @default(OPEN)
+  /// Equals milestoneId while the request is active → at most one active request per milestone.
+  activeKey     String?              @unique
+  /// Set while one attempt holds the right to capture; prevents double capture across orders.
+  captureLockId String?
+  paidAt        DateTime?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  attempts     PaymentAttempt[]
+  transactions PaymentTransaction[]
+
+  @@index([projectId, status])
+}
+
+enum PaymentAttemptStatus {
+  CREATED
+  APPROVED
+  CAPTURING
+  COMPLETED
+  PENDING
+  FAILED
+  CANCELLED
+}
+
+model PaymentAttempt {
+  id               String               @id @default(cuid())
+  paymentRequestId String
+  paymentRequest   PaymentRequest       @relation(fields: [paymentRequestId], references: [id], onDelete: Cascade)
+  provider         String               @default("paypal")
+  /// "sandbox", "live" or "mock". Mock attempts are always labelled as simulated in the UI.
+  environment      String
+  providerOrderId  String               @unique
+  amount           Decimal              @db.Decimal(14, 2)
+  currency         String               @db.VarChar(3)
+  status           PaymentAttemptStatus @default(CREATED)
+  lastError        String?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  transactions PaymentTransaction[]
+
+  @@index([paymentRequestId])
+}
+
+enum TransactionStatus {
+  COMPLETED
+  PENDING
+  DECLINED
+  REFUNDED
+}
+
+enum VerificationSource {
+  CAPTURE_RESPONSE
+  WEBHOOK
+  RECONCILIATION
+}
+
+model PaymentTransaction {
+  id                String             @id @default(cuid())
+  paymentRequestId  String
+  paymentRequest    PaymentRequest     @relation(fields: [paymentRequestId], references: [id], onDelete: Restrict)
+  attemptId         String
+  attempt           PaymentAttempt     @relation(fields: [attemptId], references: [id], onDelete: Restrict)
+  provider          String             @default("paypal")
+  environment       String
+  /// A capture can be recorded exactly once.
+  providerCaptureId String             @unique
+  amount            Decimal            @db.Decimal(14, 2)
+  currency          String             @db.VarChar(3)
+  status            TransactionStatus
+  verifiedVia       VerificationSource
+  payerId           String?
+  capturedAt        DateTime
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@index([paymentRequestId])
+}
+
+enum WebhookStatus {
+  RECEIVED
+  PROCESSED
+  IGNORED
+  REJECTED
+  FAILED
+}
+
+model WebhookEvent {
+  id          String        @id @default(cuid())
+  provider    String        @default("paypal")
+  /// Provider event id. Unique → duplicate deliveries are detected and not reprocessed.
+  eventId     String        @unique
+  eventType   String
+  resourceId  String?
+  verified    Boolean
+  status      WebhookStatus @default(RECEIVED)
+  payload     Json
+  error       String?
+  receivedAt  DateTime      @default(now())
+  processedAt DateTime?
+}
+
+// ───────────────────────────── AI & audit ─────────────────────────────
+
+enum AIAnalysisKind {
+  PROJECT_EXTRACTION
+  PROPOSAL_DRAFT
+  SCOPE_COMPARISON
+}
+
+model AIAnalysis {
+  id            String         @id @default(cuid())
+  ownerId       String
+  owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  projectId     String?
+  project       Project?       @relation("ProjectAnalyses", fields: [projectId], references: [id], onDelete: Cascade)
+  kind          AIAnalysisKind
+  provider      String
+  model         String
+  promptVersion String
+  input         String
+  output        Json?
+  succeeded     Boolean
+  error         String?
+  latencyMs     Int
+  createdAt     DateTime       @default(now())
+
+  sourceOfProject Project?             @relation("ProjectSourceAnalysis")
+  changeRequests  ScopeChangeRequest[]
+
+  @@index([ownerId, createdAt])
+  @@index([projectId, kind])
+}
+
+model AuditEvent {
+  id        String    @id @default(cuid())
+  projectId String?
+  project   Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  actorType ActorType
+  actorId   String?
+  action    String
+  data      Json?
+  createdAt DateTime  @default(now())
+
+  @@index([projectId, createdAt])
+}
+
+model RateLimitBucket {
+  key     String   @id
+  count   Int
+  resetAt DateTime
+}
