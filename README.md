@@ -27,6 +27,15 @@ Built for the [PayPal AI Hackathon 2026](https://paypalaihackathon.devpost.com/)
 | 9. Smart timeline | A Bryntum Gantt from approved milestones, PayPal payments and approved change requests: agreed baseline, payment dependencies, late and at-risk flags, and an AI schedule explanation that never moves commitments | Code computes, AI explains |
 | 10. Financial Intelligence | AG Studio dashboards (revenue, payment risk, scope-change impact) per currency, with Studio's agents running on Claude and a grounded "Ask your finances" | Code computes, AI explains |
 
+## For judges: testing the live demo
+
+1. Open **https://freelanceflow.hayaix.tech/demo** and click **Start my demo workspace**. No account or password is needed, and each visitor gets a private workspace for 24 hours.
+2. Follow the 12 steps on that page. The guided "Next step" card on each project leads the way, and AI runs on live Claude.
+3. To pay as the client, open the client portal link from the project, click **Pay with PayPal**, and sign in with a **PayPal Sandbox Personal (buyer) account**. The submission's testing instructions give a dedicated Sandbox buyer login, or use your own from developer.paypal.com → Testing Tools → Sandbox Accounts. No real money moves.
+4. The **Smart timeline** tab (Bryntum Gantt) and **Financial Intelligence** in the sidebar (AG Studio) show the same records.
+
+Bryntum Gantt and AG Studio run as vendor trials, so they show a watermark.
+
 ## Quick start (local)
 
 ```bash
@@ -77,3 +86,7 @@ See [submission/release-checklist.md](submission/release-checklist.md) for the h
 - ✅ Deployed at **https://freelanceflow.hayaix.tech** (AWS Lightsail, us-east-1) with live Claude and PayPal Sandbox. See [docs/deployment/](docs/deployment/).
 - Approvals are recorded as auditable consent; they are **not** qualified electronic signatures.
 - Single freelancer per workspace. Teams, organizations, subscriptions, other payment providers and other languages are architectural extension points, not features.
+
+## License
+
+[MIT](LICENSE) for this repository's code. Third-party packages keep their own licences: Bryntum Gantt and AG Studio are commercial products used here under their free trials and installed from npm; none of their code is committed.

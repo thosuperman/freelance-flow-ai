@@ -12,7 +12,7 @@ Known from PayPal's developer blog: the project must "meaningfully use both PayP
 - [ ] Live demo URL https://freelanceflow.hayaix.tech/demo tested in a private window (Sandbox buyer instructions included)
 - [ ] Sandbox test buyer instructions for judges (e.g. "use your own PayPal Sandbox personal account", or provide a dedicated **sandbox-only** buyer)
 - [ ] Every link in the submission opens (broken links can disqualify)
-- [ ] Choose the prize categories that apply: Best Use of PayPal + AI, plus **Best Use of Bryntum** and **Best Use of AG Grid** (see `sponsor-integrations.md`). APIMatic has no judged prize; claim the participant subscription through APIMatic's form if wanted
+- [ ] Choose the prize categories that apply: Best Use of PayPal + AI, **Best Use of Bryntum**, **Best Use of AG Grid** and **Best Use of APIMatic** (all listed in Official Rules §8). A project can win at most one Grand or Honorable Mention prize plus one Sponsor prize
 - [ ] Mention in the description that Bryntum and AG Studio run as trials (watermarks)
 - [ ] Team members added on Devpost
 - [ ] Submit before the deadline, then re-open the submission page to confirm it shows as submitted
