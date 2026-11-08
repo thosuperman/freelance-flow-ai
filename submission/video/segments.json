@@ -1,0 +1,44 @@
+[
+ {
+  "id": "s1",
+  "title": null,
+  "text": "Freelancers lose time chasing agreements and payments. And when clients ask for extra work, it often goes unpaid. FreelanceFlow AI keeps it all connected, from the first conversation to the final payment.",
+  "duration": 15.9
+ },
+ {
+  "id": "s2",
+  "title": "AI Project Creation",
+  "text": "Here is a real client message. A landing page, a fifteen hundred dollar budget, and thirty percent upfront. With one click, AI turns it into a structured project. Deliverables, a timeline, and two milestones: a four hundred fifty dollar deposit, and a one thousand fifty dollar final payment. Nothing is agreed until the freelancer reviews it and confirms.",
+  "duration": 29.27
+ },
+ {
+  "id": "s3",
+  "title": "Client Approval",
+  "text": "AI drafts the proposal wording, while the prices come straight from the milestones. Sending it locks the terms. The client opens a private link, and approves that exact version.",
+  "duration": 13.75
+ },
+ {
+  "id": "s4",
+  "title": "PayPal Sandbox Payment",
+  "text": "Now the freelancer requests the deposit. The client pays with PayPal, here in the PayPal Sandbox. FreelanceFlow confirms the payment with PayPal before marking it as received. The receipt shows the PayPal capture I D, and the project now shows four hundred fifty dollars received.",
+  "duration": 22.23
+ },
+ {
+  "id": "s5",
+  "title": "AI Scope Protection",
+  "text": "Later, the client asks: can you also add a booking system? FreelanceFlow compares the request with the approved agreement. It points to the exact terms it relied on, and explains why this is new work. The freelancer sets the price at three hundred dollars.",
+  "duration": 20.03
+ },
+ {
+  "id": "s6",
+  "title": "Financial Overview",
+  "text": "The client approves the change. The project is now worth eighteen hundred dollars, with four hundred fifty received, and thirteen hundred fifty outstanding. The timeline and the financial dashboard update from the same records.",
+  "duration": 16.72
+ },
+ {
+  "id": "s7",
+  "title": null,
+  "text": "With FreelanceFlow AI, freelancers spend less time on admin, protect their scope, and get paid through PayPal. From the first conversation to the final payment, everything stays connected.",
+  "duration": 14.08
+ }
+]

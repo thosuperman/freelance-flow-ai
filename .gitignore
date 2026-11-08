@@ -59,3 +59,11 @@ next-env.d.ts
 
 # filled-in judge credentials (never commit)
 /submission/JUDGE_CREDENTIALS.md
+
+# demo video build intermediates (regenerate with scripts/video/*)
+/submission/video/raw/
+/submission/video/tmp/
+/submission/video/assets/
+/submission/video/audio/
+/submission/video/narration.wav
+/submission/video/captions.json
