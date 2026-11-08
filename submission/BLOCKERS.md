@@ -18,9 +18,17 @@ As of 2026-11-08. Deadline: **Nov 12, 2026, 12:00 PM PT (Nov 13, 05:00 JST)**.
 
 ## B3: No PayPal Sandbox buyer login for judges (P0)
 
-- **Missing:** a Sandbox buyer account judges can use in the PayPal popup.
+- **Missing:** 2–3 Sandbox buyer accounts judges can use in the PayPal popup.
 - **Why it matters:** the rules ask entrants to provide any "sandbox login details necessary to run and test". Without them, judges cannot complete the payment step.
-- **Action:** developer.paypal.com → Testing Tools → Sandbox Accounts → create a new **Personal** account just for judges (not the one you use) → copy its email and password into the "Testing instructions" block of `FINAL_SUBMISSION.md` and the Devpost form.
+- **Action (about 5 minutes, in the PayPal Developer Dashboard; there's no API for this):**
+  1. Go to https://developer.paypal.com, log in, and make sure the toggle says **Sandbox**.
+  2. Open **Testing Tools → Sandbox Accounts → Create account**.
+  3. Choose **Personal (Buyer Account)**, country **United States**, then **Create**.
+  4. Repeat for 2–3 accounts. Each one gets a generated email and a balance.
+  5. For each, use **⋯ → View/Edit account** to see the email and password. You can change the password there to something memorable for judges.
+  6. Copy `submission/JUDGE_CREDENTIALS.template.md` to `submission/JUDGE_CREDENTIALS.md` (git-ignored) and fill it in.
+  7. Put the credentials only in a judges-only Devpost field if the form has one; otherwise in the testing instructions. They're Sandbox-only, but keep them out of the public description where possible.
+  8. Never share the merchant (Business) Sandbox account or the app's client secret.
 - **Claude can fix it:** no (creating accounts and handling passwords is yours to do). **You must:** yes.
 
 ## B4: Production payment through the SDK gateway not yet verified (P1)

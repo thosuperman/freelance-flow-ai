@@ -124,16 +124,16 @@ nextjs, typescript, react, tailwindcss, shadcn-ui, prisma, postgresql, better-au
 
 ## Testing instructions for judges
 
-1. Open https://freelanceflow.hayaix.tech/demo → **Start my demo workspace**. No account is needed; each visitor gets a private 24-hour workspace.
-2. Follow the 12 steps on that page, or the guided "Next step" card in each project.
-3. To pay as the client, open the client portal link from the project, click **Pay with PayPal**, and log in with this PayPal **Sandbox** buyer account:
-   - Email: **[YOU: sandbox buyer email]**
-   - Password: **[YOU: sandbox buyer password]**
+1. Open https://freelanceflow.hayaix.tech/demo → **Try the full demo**. No account is needed; you get a private workspace with an approved proposal, a $450 deposit ready to pay and a pending change request.
+2. Follow the **Judge walkthrough** card: open the client portal → **Pay with PayPal** → log in with the PayPal **Sandbox** buyer below → approve. You'll see a receipt with the PayPal capture ID and $450 received on the project.
+3. Approve change request #1 in the portal, then run **Scope & changes → Check against scope** (live Claude).
+4. See the **Smart timeline** tab (Bryntum) and **Financial Intelligence** (AG Studio).
 
-   This is a Sandbox-only test account; no real money moves.
-4. Then see **Smart timeline** (project tab) and **Financial Intelligence** (sidebar).
+PayPal Sandbox buyer (simulated funds only). **[YOU: put this only in a judges-only field if the form has one]**
+- Email: `<from submission/JUDGE_CREDENTIALS.md>`
+- Password: `<from submission/JUDGE_CREDENTIALS.md>`
 
-To run it locally instead, see the README (Docker Postgres, `npm run dev`; works without keys using clearly labelled simulated AI and PayPal).
+Full guide: https://github.com/thosuperman/freelance-flow-ai/blob/main/submission/JUDGE_DEMO_GUIDE.md
 
 ## How it was built during the hackathon
 
