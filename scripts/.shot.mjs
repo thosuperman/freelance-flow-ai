@@ -1,0 +1,17 @@
+import { chromium } from "@playwright/test";
+const browser = await chromium.launch();
+const B = "https://freelanceflow.hayaix.tech";
+const page = await (await browser.newContext({ baseURL: B })).newPage();
+await page.goto("/demo");
+await page.getByTestId("start-full-demo").click();
+await page.waitForURL(/tour=judge/, { timeout: 60000 });
+const portal = await page.getByTestId("open-portal").getAttribute("href");
+const cp = await (await browser.newContext({ baseURL: B, viewport: { width: 1280, height: 900 } })).newPage();
+await cp.goto(portal);
+await cp.getByTestId("pay-now").click();
+await cp.getByTestId("sandbox-buyer").waitFor();
+await cp.frameLocator('iframe[name^="__zoid__paypal_buttons"]').locator("body").waitFor({ timeout: 60000 });
+await cp.waitForTimeout(3000);
+await cp.evaluate(() => { const dds = document.querySelectorAll('[data-testid="sandbox-buyer"] dd.font-mono'); if (dds[1]) dds[1].textContent = "••••••••"; });
+await cp.screenshot({ path: "submission/screenshots/06-paypal-sandbox-checkout.png" });
+await browser.close();

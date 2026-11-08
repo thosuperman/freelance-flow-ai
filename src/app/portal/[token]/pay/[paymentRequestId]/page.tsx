@@ -7,6 +7,8 @@ import { getPortalGrant } from "@/features/portal/service";
 import { reconcilePaymentRequest } from "@/features/payments/service";
 import { Money } from "@/components/shared/money";
 import { PayPalCheckout } from "@/components/payments/paypal-checkout";
+import { SandboxBuyerCard } from "@/components/demo/sandbox-buyer-card";
+import { sandboxBuyer } from "@/features/demo/sandbox-buyer";
 
 export default async function PayPage({ params }: PageProps<"/portal/[token]/pay/[paymentRequestId]">) {
   const { token, paymentRequestId } = await params;
@@ -19,6 +21,7 @@ export default async function PayPage({ params }: PageProps<"/portal/[token]/pay
   }
   if (pr.status === "PAID") redirect(`/portal/${token}/receipt/${pr.id}`);
   const cfg = paypalConfig();
+  const buyer = sandboxBuyer();
   const brand = grant.project.owner.profile?.businessName || grant.project.owner.name;
 
   return (
@@ -41,7 +44,10 @@ export default async function PayPage({ params }: PageProps<"/portal/[token]/pay
         ) : pr.status === "PROCESSING" ? (
           <p className="rounded-xl bg-sky-50 p-4 text-sm text-sky-900">PayPal is still processing your payment. You don’t need to pay again — this page updates once it’s confirmed.</p>
         ) : (
-          <PayPalCheckout token={token} paymentRequestId={pr.id} currency={pr.currency} mode={cfg.mode} clientId={cfg.clientId} />
+          <div className="space-y-4">
+            {buyer ? <SandboxBuyerCard buyer={buyer} compact /> : null}
+            <PayPalCheckout token={token} paymentRequestId={pr.id} currency={pr.currency} mode={cfg.mode} clientId={cfg.clientId} />
+          </div>
         )}
       </div>
       <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">

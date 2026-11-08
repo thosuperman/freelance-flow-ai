@@ -4,8 +4,12 @@ import { aiConfig } from "@/lib/ai/provider";
 import { paypalConfig } from "@/lib/paypal";
 import { Logo } from "@/components/shared/logo";
 import { StartDemoButton } from "@/components/demo/start-demo-button";
+import { SandboxBuyerCard } from "@/components/demo/sandbox-buyer-card";
+import { sandboxBuyer } from "@/features/demo/sandbox-buyer";
 
 export const metadata: Metadata = { title: "Experience FreelanceFlow AI" };
+// Reads runtime configuration (AI provider, PayPal mode, optional Sandbox buyer), so render per request.
+export const dynamic = "force-dynamic";
 
 const FLOW = [
   "Load an example client conversation",
@@ -25,6 +29,7 @@ const FLOW = [
 export default function DemoPage() {
   const ai = aiConfig();
   const pp = paypalConfig();
+  const buyer = sandboxBuyer();
   return (
     <div className="min-h-screen">
       <header className="mx-auto flex max-w-5xl items-center justify-between px-4 py-5 sm:px-6">
@@ -55,7 +60,8 @@ export default function DemoPage() {
               <span className="font-medium">Isolated, expires after 24 hours</span>
             </div>
           </div>
-          {pp.mode === "sandbox" ? (
+          {buyer ? <div className="mt-3"><SandboxBuyerCard buyer={buyer} /></div> : null}
+          {pp.mode === "sandbox" && !buyer ? (
             <p className="mt-3 text-xs text-muted-foreground">
               Step 6 requires a PayPal Sandbox personal (buyer) account. Payment is only marked as received after PayPal confirms the capture.
             </p>

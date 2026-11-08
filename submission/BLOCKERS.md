@@ -16,20 +16,15 @@ As of 2026-11-08. Deadline: **Nov 12, 2026, 12:00 PM PT (Nov 13, 05:00 JST)**.
 - **Action:** merge the branch's PR into `main`, then confirm that https://github.com/thosuperman/freelance-flow-ai shows "MIT license" in About. If you prefer a different OSI licence, replace the file before merging.
 - **Claude can fix it:** yes, once you approve the merge. **You must:** approve the PR merge.
 
-## B3: No PayPal Sandbox buyer login for judges (P0)
+## B3: PayPal Sandbox buyer for judges (resolved; backup recommended)
 
-- **Missing:** 2–3 Sandbox buyer accounts judges can use in the PayPal popup.
-- **Why it matters:** the rules ask entrants to provide any "sandbox login details necessary to run and test". Without them, judges cannot complete the payment step.
-- **Action (about 5 minutes, in the PayPal Developer Dashboard; there's no API for this):**
-  1. Go to https://developer.paypal.com, log in, and make sure the toggle says **Sandbox**.
-  2. Open **Testing Tools → Sandbox Accounts → Create account**.
-  3. Choose **Personal (Buyer Account)**, country **United States**, then **Create**.
-  4. Repeat for 2–3 accounts. Each one gets a generated email and a balance.
-  5. For each, use **⋯ → View/Edit account** to see the email and password. You can change the password there to something memorable for judges.
-  6. Copy `submission/JUDGE_CREDENTIALS.template.md` to `submission/JUDGE_CREDENTIALS.md` (git-ignored) and fill it in.
-  7. Put the credentials only in a judges-only Devpost field if the form has one; otherwise in the testing instructions. They're Sandbox-only, but keep them out of the public description where possible.
-  8. Never share the merchant (Business) Sandbox account or the app's client secret.
-- **Claude can fix it:** no (creating accounts and handling passwords is yours to do). **You must:** yes.
+- **Done:** a Sandbox Personal buyer is configured on the server (`DEMO_PAYPAL_BUYER_EMAIL` / `DEMO_PAYPAL_BUYER_PASSWORD`) and shown on `/demo`, on the judge walkthrough and on the payment page. Verified 2026-11-08. It is shown only while `PAYPAL_MODE=sandbox` and is not in the repository.
+- **Remaining risk:** the login is public, so any visitor could change its password and lock judges out.
+- **Action (recommended):**
+  - Create 1–2 backup Sandbox Personal accounts (Testing Tools → Sandbox Accounts → Create account → Personal, United States).
+  - Keep them in `submission/JUDGE_CREDENTIALS.md` (git-ignored) and put one in a judges-only Devpost field.
+  - If the shared one breaks, update the two server variables and run `docker compose -f compose.prod.yml --env-file .env.production up -d app`.
+- **Claude can fix it:** I can switch the server variables. **You must:** create the backup accounts.
 
 ## B4: Production payment through the SDK gateway not yet verified (P1)
 

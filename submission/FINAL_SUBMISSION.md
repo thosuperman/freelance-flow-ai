@@ -129,9 +129,7 @@ nextjs, typescript, react, tailwindcss, shadcn-ui, prisma, postgresql, better-au
 3. Approve change request #1 in the portal, then run **Scope & changes → Check against scope** (live Claude).
 4. See the **Smart timeline** tab (Bryntum) and **Financial Intelligence** (AG Studio).
 
-PayPal Sandbox buyer (simulated funds only). **[YOU: put this only in a judges-only field if the form has one]**
-- Email: `<from submission/JUDGE_CREDENTIALS.md>`
-- Password: `<from submission/JUDGE_CREDENTIALS.md>`
+The PayPal **Sandbox** buyer login (simulated funds only) is shown on the demo page, the walkthrough card and the payment page, so no credentials need to be copied from here. Backup buyer, in case the shared one was changed: **[YOU: add from submission/JUDGE_CREDENTIALS.md, ideally in a judges-only field]**.
 
 Full guide: https://github.com/thosuperman/freelance-flow-ai/blob/main/submission/JUDGE_DEMO_GUIDE.md
 
