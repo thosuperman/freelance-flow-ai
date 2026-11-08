@@ -1,6 +1,6 @@
 # Three-minute demo script
 
-Setup before recording: deployed (or local) app with **real Claude** (`ANTHROPIC_API_KEY`) and **PayPal Sandbox** (`PAYPAL_MODE=sandbox`). Window A = freelancer, Window B = private window for the client. Sign in to a PayPal Sandbox *Personal* account in Window B beforehand to save time. Browser zoom 110%.
+Setup before recording: use https://freelanceflow.hayaix.tech; deployed (or local) app with **real Claude** (`ANTHROPIC_API_KEY`) and **PayPal Sandbox** (`PAYPAL_MODE=sandbox`). Window A = freelancer, Window B = private window for the client. Sign in to a PayPal Sandbox *Personal* account in Window B beforehand to save time. Browser zoom 110%.
 
 | Time | Screen | Action | Voice-over |
 | --- | --- | --- | --- |
@@ -12,8 +12,11 @@ Setup before recording: deployed (or local) app with **real Claude** (`ANTHROPIC
 | 1:15–1:30 | Window B: portal | **Review proposal** → tick consent → **Approve** | "My client approves that exact version — we record who, when and which version." |
 | 1:30–1:55 | A: **Request payment** on deposit → B: **Pay with PayPal** → Sandbox popup → Pay → receipt | "The amount comes from the approved milestone. Our server captures the order with PayPal, verifies amount and currency, and records it once. Here's the PayPal capture ID." |
 | 1:55–2:30 | A: Scope & changes | Paste/insert "Can you also add a booking system?" → **Check against scope** → highlight cited E4 → show $300 price basis | "Then the classic: 'Can you also add a booking system?' FreelanceFlow checks it against what was approved — and shows its work: not covered by D1–D3, explicitly excluded by E4. It drafts a change request; the price is 6 hours times *my* rate — AI never sets prices." |
-| 2:30–2:45 | A: **Send to client for approval** → B: approve change | "My client approves the extra $300 — without me awkwardly chasing it." |
-| 2:45–2:58 | A: project financials → Dashboard | Hover Original / Changes / Revised / Paid / Outstanding | "Original $1,500, approved changes $300, revised $1,800, $450 paid, $1,350 outstanding — all from approved records and verified PayPal payments." |
+| 2:30–2:40 | A: **Send to client for approval** → B: approve change | "My client approves the extra $300 — without me awkwardly chasing it." |
+| 2:40–2:50 | A: **Smart timeline** tab | Point at baseline, payment diamonds and the new **CR #1** phase; click it for the details panel | "The Bryntum timeline shows the agreed plan, every PayPal payment as a dependency, and the approved change as its own phase. The original agreement never moves." |
+| 2:50–2:58 | A: **Financial Intelligence** | Revenue overview (totals by currency) → one AI Assistant answer already on screen | "And AG Studio turns the same verified records into analytics. Its agents run on Claude and never mix currencies." |
 | 2:58–3:00 | Logo | — | "AI understands the work. Humans approve. PayPal pays. FreelanceFlow protects the freelancer." |
 
 Fallback: if live AI is slow, pre-run step 3 and cut. Never show the simulated gateway as if it were PayPal; if Sandbox is unavailable, say so on camera and show the "Simulated PayPal" label.
+
+Pre-run the AG Studio assistant question once before recording (an agent run takes about 20–30 s) and keep the answer visible. Keep the whole video under 3:00.

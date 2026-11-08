@@ -8,6 +8,9 @@
 
 generator client {
   provider = "prisma-client-js"
+  // "native" for local development; debian-openssl-3.0.x for the Linux production image, whose
+  // app bundle is built on the admin machine (see Dockerfile.prebuilt).
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -529,6 +532,8 @@ enum AIAnalysisKind {
   PROJECT_EXTRACTION
   PROPOSAL_DRAFT
   SCOPE_COMPARISON
+  TIMELINE_INSIGHT
+  FINANCIAL_INSIGHT
 }
 
 model AIAnalysis {

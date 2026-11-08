@@ -18,9 +18,9 @@ Status as of 2026-11-07 (local build). ✅ = done and verified locally · ⏳ = 
 | Client approves the change request | ✅ | E2E + integration |
 | Financial totals update accurately | ✅ | Unit + integration + E2E |
 | Authorization boundaries enforced | ✅ | Integration tests (cross-user, cross-project tokens, revoked tokens) |
-| Core automated tests pass | ✅ | 37 unit, 35 integration, 5 E2E (desktop + mobile), all passing |
+| Core automated tests pass | ✅ | 101 Vitest (unit + integration) and 5 Playwright E2E (desktop + mobile, incl. timeline and AG Studio), all passing (2026-11-08) |
 | Works on desktop and mobile | ✅ | Responsive layouts; mobile E2E checks no horizontal overflow |
-| Deployable using documented steps | ⏳ | `docs/DEPLOYMENT.md`; **not deployed publicly** (needs your accounts and authorization) |
+| Deployable using documented steps | ✅ | Live at https://freelanceflow.hayaix.tech (AWS Lightsail us-east-1) via `deploy/deploy.sh`; see `docs/deployment/` |
 | Devpost materials prepared | ✅ | `submission/` (video and screenshots still to be recorded) |
 
 ## Before the public demo
@@ -28,7 +28,7 @@ Status as of 2026-11-07 (local build). ✅ = done and verified locally · ⏳ = 
 - [x] Set `ANTHROPIC_API_KEY`, run the demo, confirm no "Simulated AI" badges and `AIAnalysis.provider = anthropic` (2026-11-07, local)
 - [x] Configure PayPal Sandbox app + webhook; complete the manual verification and note the capture ID here: `4L223070M78934542` (2026-11-07, local via ngrok)
 - [ ] Repeat the Sandbox checkout on the deployed URL (update the webhook URL to the deployed domain first)
-- [ ] Deploy to Vercel; run `prisma migrate deploy`; check `/api/health`
-- [ ] Set `CRON_SECRET`; confirm the cleanup cron is registered
+- [x] Deploy to AWS Lightsail; `prisma migrate deploy` runs in every release; `/api/health` OK (2026-11-08)
+- [x] Set `CRON_SECRET`; hourly cleanup cron on the server returns `{"deleted":0}` (2026-11-07)
 - [ ] Run `npm run typecheck && npm run lint && npm test && npm run test:e2e`
 - [ ] Record video and screenshots from the deployed environment

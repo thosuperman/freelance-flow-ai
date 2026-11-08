@@ -13,10 +13,14 @@ We wanted the agreement itself to become the system of record, with AI doing the
 3. **Milestones → PayPal payments.** Deposits become payable on approval, and delivery milestones after the client accepts the work. The server creates a PayPal order from the stored amount, captures it after buyer approval, verifies amount, currency and reference, and records the capture exactly once. Verified webhooks and provider reconciliation cover pending captures, closed tabs, timeouts, refunds and duplicate deliveries.
 4. **Scope protection, our signature feature.** When the client writes "Can you also add a booking system?", FreelanceFlow compares the request with the approved scope and explains its decision by citing the exact deliverables and exclusions it used. Out-of-scope work becomes a change request priced from the freelancer's own hourly rate (AI estimates hours but never sets a price). The client approves it and the scope, milestones and totals update. The original agreement is never overwritten.
 5. **Financial truth.** Original contract, approved changes, revised value, paid, outstanding, pending and overdue. All derived from approved records and verified PayPal captures, never from editable totals, and never mixing currencies.
+6. **Smart Milestone Timeline (Bryntum Gantt).** Every project gets a read-only Gantt built from its approved milestones, PayPal payment requests and approved change requests. The agreed plan is drawn as a baseline, payments are dependencies, and late work or overdue PayPal payments flag everything downstream as at risk. Claude explains the schedule risk and drafts a polite client message, but never moves an approved date.
+7. **Financial Intelligence (AG Studio).** An embedded analytics workspace over the same records, covering revenue, payment risk and scope-change impact, always split by currency. AG Studio's built-in agents run on Claude through our own server bridge, and an "Ask your finances" box answers from figures computed by code and shows which figures it used.
 
 ## How we built it
 
-A modular Next.js 16 monolith with strict TypeScript, Prisma and PostgreSQL. Business rules live in small pure modules (milestone and change-request state machines, payment eligibility, financial derivation) that AI output can never bypass. AI goes through a provider interface: Claude with structured outputs in production, and a clearly labelled heuristic fallback for offline use. PayPal goes through a gateway interface: the real Orders v2 REST client for Sandbox/Live, and an in-process simulator that exercises the same code paths in tests.
+A modular Next.js 16 monolith with strict TypeScript, Prisma and PostgreSQL. Business rules live in small pure modules (milestone and change-request state machines, payment eligibility, financial derivation) that AI output can never bypass. AI goes through a provider interface: Claude with structured outputs in production, and a clearly labelled heuristic fallback for offline use. PayPal goes through a gateway interface. Orders run through the APIMatic-generated **PayPal Server SDK**, built with APIMatic's Context Plugin for PayPal. Webhook verification uses PayPal's REST API, and an in-process simulator exercises the same code paths in tests.
+
+It runs on a single AWS Lightsail instance (Docker Compose, Caddy, PostgreSQL) at https://freelanceflow.hayaix.tech.
 
 Integrity is enforced in the database: unique capture ids, unique webhook event ids, a partial-uniqueness key for one active payment request per milestone, row-level locks and a capture lock that makes double payment across two PayPal windows impossible.
 
@@ -29,7 +33,13 @@ Integrity is enforced in the database: unique capture ids, unique webhook event 
 ## Accomplishments that we're proud of
 
 - The complete story (conversation → approved proposal → PayPal deposit → AI-detected scope change → approved change request → updated totals) is a real, repeatable workflow, covered end to end by Playwright on a production build.
-- 72 unit and integration tests across money arithmetic, state machines, authorization boundaries, approval tamper detection, concurrent captures, amount mismatches, pending captures, refunds and webhook verification.
+- 101 unit and integration tests covering:
+  - money arithmetic and state machines
+  - authorization boundaries and approval tamper detection
+  - concurrent captures, amount mismatches, pending captures and refunds
+  - webhook verification
+  - the timeline builder, the AG Studio ↔ Claude bridge and per-currency analytics
+- Verified live: Claude (extraction, proposal, scope check, schedule explanation, AG Studio agents) and a real PayPal Sandbox capture with signature-verified webhooks.
 - Honest labelling: anything simulated says so on screen.
 
 ## What we learned
@@ -42,6 +52,6 @@ Agency teams and organizations, email one-time-code confirmation for client appr
 
 ## Built with
 
-Next.js · TypeScript · Tailwind CSS · shadcn/ui · Prisma · PostgreSQL · Better Auth · Anthropic Claude · PayPal Orders API · PayPal Webhooks · PayPal JS SDK · Vitest · Playwright
+Next.js · TypeScript · Tailwind CSS · shadcn/ui · Prisma · PostgreSQL · Better Auth · Anthropic Claude · PayPal Orders API · PayPal Server SDK (APIMatic) · PayPal Webhooks · PayPal JS SDK · Bryntum Gantt · AG Studio · AWS Lightsail · Docker · Caddy · Vitest · Playwright
 
-> Status note for judges: live PayPal Sandbox and live Claude runs depend on credentials configured in the deployment. See `submission/release-checklist.md` for what has been verified and how.
+**Try it:** https://freelanceflow.hayaix.tech/demo (live Claude, PayPal Sandbox; no real money moves). Sponsor tools are documented honestly in `submission/sponsor-integrations.md`.

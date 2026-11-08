@@ -44,7 +44,7 @@ The seed prints its **test** sign-in (`sample@freelanceflow.test` / `sample-pass
 | `ANTHROPIC_API_KEY` | for real AI | Anthropic API key |
 | `AI_MODEL` | no | Default `claude-opus-5-5` |
 | `AI_TIMEOUT_MS` | no | Default 90000 |
-| `PAYPAL_MODE` | yes | `sandbox`, `live` or `mock` (tests only; refused when `VERCEL_ENV=production`) |
+| `PAYPAL_MODE` | yes | `sandbox`, `live` or `mock` (tests only; refused when `APP_ENV=production` or `VERCEL_ENV=production`) |
 | `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET` | sandbox/live | REST app credentials (server only) |
 | `NEXT_PUBLIC_PAYPAL_CLIENT_ID` | sandbox/live | Same client id for the PayPal JS SDK (public by design) |
 | `PAYPAL_WEBHOOK_ID` | sandbox/live | Webhook id used for signature verification |

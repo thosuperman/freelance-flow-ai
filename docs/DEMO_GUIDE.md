@@ -2,7 +2,7 @@
 
 Time: about 3 minutes. You play both the **freelancer** (main window) and the **client** (a second window or private window, using the portal link).
 
-Start at **`/demo`** → **Start my demo workspace**. This creates a private, isolated workspace for you that expires after 24 hours. Its hourly rate is set to $50/h so change requests can be priced.
+Start at **https://freelanceflow.hayaix.tech/demo** (or `/demo` locally) → **Start my demo workspace**. This creates a private, isolated workspace for you that expires after 24 hours. Its hourly rate is set to $50/h so change requests can be priced.
 
 | # | Step | Where | What to look for |
 | --- | --- | --- | --- |
@@ -16,6 +16,8 @@ Start at **`/demo`** → **Start my demo workspace**. This creates a private, is
 | 8 | Change request form | Scope tab | Price **$300.00** = 6 h × $50/h (from your rate, not from AI) → **Send to client for approval** |
 | 9 | Approve the change | Portal | "The project total becomes $1,800.00" |
 | 10 | Totals | Project & Dashboard | Original $1,500 · Approved changes $300 · Revised $1,800 · Paid $450 · Outstanding $1,350 |
+| 11 | **Smart timeline** tab | Project | Bryntum Gantt: agreement group with the dashed agreed baseline, payment diamonds linked to phases, the new **CR #1** phase under "Approved changes". Click a bar for its details; **Explain schedule risk** for Claude's explanation |
+| 12 | **Financial Intelligence** | Sidebar | AG Studio: totals by currency, paid vs outstanding, payment risk and scope-change pages. **Ask your finances** cites the exact figures. **Customize** opens Studio's AI Assistant (built-in agents on Claude) |
 
 ## When a Sandbox payment is required
 

@@ -20,9 +20,14 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.6.0",
+    "@bryntum/gantt": "npm:@bryntum/gantt-trial@7.3.8",
+    "@bryntum/gantt-react": "7.3.8",
     "@hookform/resolvers": "^7.0.3",
+    "@paypal/paypal-server-sdk": "2.5.0",
     "@paypal/react-paypal-js": "^10.6.1",
     "@prisma/client": "^6.19.3",
+    "ag-studio": "3.1.0",
+    "ag-studio-react": "3.1.0",
     "better-auth": "^1.7.18",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -68,7 +73,9 @@
     "@prisma/client@6.19.3": true,
     "@prisma/engines@6.19.3": true,
     "prisma@6.19.3": true,
-    "esbuild@0.28.2": true
+    "esbuild@0.28.2": true,
+    "@bryntum/gantt-trial@7.3.8": true,
+    "@bryntum/gantt-trial-lib@1.0.1": true
   },
   "engines": {
     "node": ">=20.9"

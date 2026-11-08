@@ -10,18 +10,37 @@ import {
   ProjectExtractionSchema,
   ProposalDraftSchema,
   ScopeComparisonSchema,
+  TimelineInsightSchema,
+  FinancialAnswerSchema,
   type ProjectExtraction,
   type ProposalDraft,
 } from "@/lib/ai/schemas";
-import type { CompareContext, ExtractContext, ProposalContext, ScopeRef } from "@/lib/ai/simulated";
+import type { CompareContext, ExtractContext, FinancialAnswerContext, ProposalContext, ScopeRef, TimelineInsightContext } from "@/lib/ai/simulated";
 import { normalizeComparison, normalizeExtraction, type NormalizedComparison, type NormalizedExtraction } from "./normalize";
 import { getProjectDetail } from "@/features/projects/service";
 
 const MAX_INPUT = 12_000;
 const DEMO_AI_LIMIT = 25;
 
+/** Site-wide cap on AI calls per 24 hours (AI_DAILY_LIMIT; unset or 0 = no cap). */
+function dailyLimit(): number {
+  const n = Number(process.env.AI_DAILY_LIMIT);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+}
+
 async function guard(userId: string, isDemo: boolean) {
   await rateLimit(`ai:${userId}`, 20, 60 * 10);
+  const cap = dailyLimit();
+  if (cap) {
+    try {
+      await rateLimit("ai:global:day", cap, 60 * 60 * 24);
+    } catch (e) {
+      if (isDomainError(e) && e.code === "RATE_LIMITED") {
+        throw new DomainError("RATE_LIMITED", "The live AI has reached today's usage limit for this demo site. Please try again tomorrow.");
+      }
+      throw e;
+    }
+  }
   if (isDemo) {
     const used = await db.aIAnalysis.count({ where: { ownerId: userId } });
     if (used >= DEMO_AI_LIMIT) throw new DomainError("RATE_LIMITED", "This demo workspace has reached its AI usage limit.");
@@ -218,4 +237,57 @@ export async function compareScope(
     simulated: r.simulated,
     model: r.model,
   };
+}
+
+// ───────────────────────────── Timeline & financial insights ─────────────────────────────
+
+/** Explains the computed timeline risks. Input is the application's own computed facts, not client text. */
+export async function explainTimelineWithAI(
+  user: { id: string; profile: { isDemo: boolean } },
+  projectId: string,
+  context: TimelineInsightContext,
+) {
+  await guard(user.id, user.profile.isDemo);
+  const input = JSON.stringify(context);
+  return run({
+    userId: user.id,
+    projectId,
+    kind: "TIMELINE_INSIGHT",
+    promptVersion: PROMPTS.explainTimeline.version,
+    input,
+    task: {
+      task: "explainTimeline",
+      schema: TimelineInsightSchema,
+      system: PROMPTS.explainTimeline.system,
+      user: `Computed timeline facts (JSON):\n${input}`,
+      context,
+      maxTokens: 1500,
+    },
+  });
+}
+
+/** Answers a question from computed financial facts. Numbers come from code; the model only explains. */
+export async function answerFinancialQuestion(
+  user: { id: string; profile: { isDemo: boolean } },
+  question: string,
+  facts: FinancialAnswerContext["facts"],
+) {
+  const q = question.trim();
+  if (q.length < 3 || q.length > 500) throw new DomainError("INVALID_INPUT", "Ask a question between 3 and 500 characters.");
+  await guard(user.id, user.profile.isDemo);
+  const context: FinancialAnswerContext = { question: q, facts };
+  return run({
+    userId: user.id,
+    kind: "FINANCIAL_INSIGHT",
+    promptVersion: PROMPTS.financialAnswer.version,
+    input: q,
+    task: {
+      task: "financialAnswer",
+      schema: FinancialAnswerSchema,
+      system: PROMPTS.financialAnswer.system,
+      user: `Computed financial facts (JSON):\n${JSON.stringify(facts)}\n\nQuestion from the freelancer:\n${wrapUntrusted(q)}`,
+      context,
+      maxTokens: 1200,
+    },
+  });
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { FolderKanban, LayoutDashboard, LogOut, Menu, Receipt, Settings, Sparkles } from "lucide-react";
+import { FolderKanban, LayoutDashboard, LogOut, Menu, Receipt, Settings, Sparkles, BarChart3 } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -15,6 +15,7 @@ const NAV = [
   { href: "/app/new", label: "New project", icon: Sparkles },
   { href: "/app/projects", label: "Projects", icon: FolderKanban },
   { href: "/app/payments", label: "Payments", icon: Receipt },
+  { href: "/app/insights", label: "Financial Intelligence", icon: BarChart3 },
   { href: "/app/settings", label: "Settings", icon: Settings },
 ];
 

@@ -53,6 +53,21 @@ describe("AI service resilience", () => {
     const user = await createUser();
     await expect(extractProjectFromText(user, "hi")).rejects.toMatchObject({ code: "INVALID_INPUT" });
   });
+
+  it("enforces the site-wide daily AI cap across users", async () => {
+    process.env.AI_DAILY_LIMIT = "2";
+    try {
+      const text = "I need a landing page for my business. Budget is $1,500.";
+      await extractProjectFromText(await createUser(), text);
+      await extractProjectFromText(await createUser(), text);
+      await expect(extractProjectFromText(await createUser(), text)).rejects.toMatchObject({
+        code: "RATE_LIMITED",
+        message: expect.stringMatching(/today's usage limit/),
+      });
+    } finally {
+      delete process.env.AI_DAILY_LIMIT;
+    }
+  });
 });
 
 describe("PayPal HTTP gateway (Orders v2) with mocked transport", () => {

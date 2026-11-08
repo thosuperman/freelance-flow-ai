@@ -1,0 +1,101 @@
+# Production stack for one Lightsail instance: Caddy (TLS) → Next.js → PostgreSQL.
+# Run on the server from /opt/freelanceflow:
+#   docker compose -f compose.prod.yml --env-file .env.production up -d
+# Only Caddy publishes ports (80/443). PostgreSQL sits on an internal-only network.
+name: freelanceflow
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: freelanceflow
+      POSTGRES_DB: freelanceflow
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}
+    # Conservative memory settings for a 2 GB host shared with the app.
+    command:
+      - postgres
+      - -c
+      - shared_buffers=128MB
+      - -c
+      - effective_cache_size=384MB
+      - -c
+      - work_mem=4MB
+      - -c
+      - maintenance_work_mem=64MB
+      - -c
+      - max_connections=40
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U freelanceflow -d freelanceflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    mem_limit: 512m
+    networks: [data]
+    logging: *logging
+
+  # One-off job: `docker compose ... run --rm migrate` (never resets data).
+  migrate:
+    image: ${APP_IMAGE:?set APP_IMAGE}
+    profiles: ["migrate"]
+    command: ["node", "/opt/prisma-cli/node_modules/prisma/build/index.js", "migrate", "deploy", "--schema", "prisma/schema.prisma"]
+    environment:
+      DATABASE_URL: postgresql://freelanceflow:${POSTGRES_PASSWORD}@db:5432/freelanceflow
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [data]
+    logging: *logging
+
+  app:
+    image: ${APP_IMAGE:?set APP_IMAGE}
+    restart: unless-stopped
+    env_file: .env.production
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://freelanceflow:${POSTGRES_PASSWORD}@db:5432/freelanceflow?connection_limit=5
+      NODE_OPTIONS: --max-old-space-size=512
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 900m
+    # `data` reaches PostgreSQL; `web` reaches Caddy and the internet (Claude, PayPal).
+    networks: [data, web]
+    logging: *logging
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?set APP_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    mem_limit: 128m
+    networks: [web]
+    logging: *logging
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
+
+networks:
+  data:
+    internal: true
+  web:
