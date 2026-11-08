@@ -5,7 +5,8 @@
 From the [APIMatic sponsor page](https://paypalaihackathon.devpost.com/details/apimatic) (read 2026-11-08):
 
 - APIMatic offers **Context Plugins** that give AI coding agents (Claude Code, Cursor, VS Code) PayPal API context.
-- There is **no "Best Use of APIMatic" judged prize**. Participants who used the Context Plugin to build their PayPal integration can claim 1 month of APIMatic Basic. Winning teams that used it can claim 6 months of APIMatic Business. Claims go through APIMatic's Google Form.
+- The sponsor page offers subscriptions: 1 month of APIMatic Basic for participants who used the Context Plugin to build their PayPal integration, and 6 months of APIMatic Business for winning teams that used it. Claims go through APIMatic's Google Form.
+- The **Official Rules** (section 8, read 2026-11-08) also list a judged **"Best Use of APIMatic"** prize: 3 × USD 1,000 plus 6 months of APIMatic Business, for "all eligible submissions that use any APIMatic tools".
 - The resource PDF gives the install command: `npx context-plugins install https://github.com/paypaldev/server-sdk-context-plugin-preview`.
 
 ## How it was used
@@ -48,5 +49,6 @@ The earlier verified Sandbox capture (`4L223070M78934542`, 2026-11-07) used the 
 
 ## Remaining user action
 
+- Select **Best Use of APIMatic** on the Devpost form if you want to compete for it. Our usage is real but modest: the SDK adoption and resilience fixes, not a large APIMatic-specific feature.
 - Claim the APIMatic participant subscription with their form, if you want it.
 - Optionally register the plugin with the install command above.
