@@ -1,0 +1,6 @@
+# Build context for Dockerfile.prebuilt: only the host-built bundle, public assets and the schema.
+*
+!.next-deploy/standalone/**
+!.next-deploy/static/**
+!public/**
+!prisma/**

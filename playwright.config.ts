@@ -28,7 +28,7 @@ export default defineConfig({
   webServer: {
     command: `npx prisma migrate deploy && npx next build && npx next start -p ${PORT}`,
     url: `http://localhost:${PORT}/api/health`,
-    timeout: 300_000,
+    timeout: 600_000, // a cold production build (Bryntum + AG Studio) can take several minutes
     reuseExistingServer: false,
     env: {
       DATABASE_URL,

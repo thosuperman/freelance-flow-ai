@@ -41,6 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 !.env.example
+!.env.production.example
 
 # testing
 /test-results/
@@ -51,3 +52,7 @@ next-env.d.ts
 
 # local Claude Code settings
 /.claude/settings.local.json
+
+# local build outputs for deployment
+/.next-deploy/
+/.next-memtest/

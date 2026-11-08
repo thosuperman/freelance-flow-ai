@@ -1,0 +1,41 @@
+# Production image from a Next.js standalone build made on the admin machine.
+#
+# Why: a cold `next build` of this app (Bryntum + AG Studio bundles) peaks at ~7 GB of RAM, more
+# than Docker Desktop's VM and far more than the 2 GB server. deploy/deploy.sh therefore builds the
+# standalone output on the host into .next-deploy/ and this file only packages it for Linux.
+# The app's runtime dependencies are pure JavaScript except Prisma's query engine, whose Linux
+# build (debian-openssl-3.0.x) is generated alongside the native one (see prisma/schema.prisma).
+#
+# Use the regular Dockerfile instead when Docker has at least ~12 GB of memory.
+
+FROM node:24-bookworm-slim AS base
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# ── Prisma CLI for `migrate deploy` ──────────────────────────────────────────
+FROM base AS prisma-cli
+WORKDIR /opt/prisma-cli
+RUN printf '%s' '{"private":true,"dependencies":{"prisma":"6.19.3"},"allowScripts":{"prisma@6.19.3":true,"@prisma/engines@6.19.3":true}}' > package.json \
+  && npm install --no-audit --no-fund \
+  && npm cache clean --force
+
+# ── Runtime ──────────────────────────────────────────────────────────────────
+FROM base AS runner
+ENV NODE_ENV=production \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0
+COPY --chown=node:node .next-deploy/standalone ./
+COPY --chown=node:node .next-deploy/static ./.next-deploy/static
+COPY --chown=node:node public ./public
+COPY --chown=node:node prisma ./prisma
+COPY --from=prisma-cli --chown=node:node /opt/prisma-cli /opt/prisma-cli
+# Drop the macOS Prisma engine traced into the bundle; only the Linux one is used here.
+RUN find /app/node_modules -name 'libquery_engine-darwin*' -delete
+USER node
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+  CMD ["node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+CMD ["node", "server.js"]

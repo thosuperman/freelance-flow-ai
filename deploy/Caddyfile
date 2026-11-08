@@ -1,0 +1,21 @@
+# Caddy obtains and renews the Let's Encrypt certificate automatically and redirects HTTP → HTTPS.
+# hayaix.tech has a CAA record allowing only letsencrypt.org, which is Caddy's default issuer.
+{
+	admin off
+}
+
+{$APP_DOMAIN} {
+	encode zstd gzip
+
+	# Caddy replaces X-Forwarded-For from untrusted clients with the real peer address,
+	# so the app's per-IP rate limits cannot be bypassed with a spoofed header.
+	reverse_proxy app:3000 {
+		header_up X-Real-IP {remote_host}
+	}
+
+	log {
+		output stdout
+		format console
+		level WARN
+	}
+}

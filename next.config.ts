@@ -22,6 +22,12 @@ function appHostname(): string[] {
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   allowedDevOrigins: appHostname(),
+  // The Docker image (Dockerfile) sets NEXT_OUTPUT=standalone; local `next start` keeps the default.
+  output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
+  // The Docker build runs in a memory-limited VM, and minifying the (unminified) Bryntum trial
+  // bundle there exhausts it. NEXT_LOW_MEMORY_BUILD=1 skips client minification only; Caddy still
+  // compresses responses. Local and CI builds keep full minification.
+  ...(process.env.NEXT_LOW_MEMORY_BUILD === "1" ? { experimental: { turbopackMinify: { client: false, server: true } } } : {}),
   // Lets the E2E build use a separate output folder so it never clobbers a running dev server.
   distDir: process.env.NEXT_DIST_DIR || ".next",
   turbopack: {
