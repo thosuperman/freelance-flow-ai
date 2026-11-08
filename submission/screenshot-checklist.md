@@ -14,5 +14,10 @@
 - [ ] 12. Activity tab audit trail + approval record (version hash)
 - [ ] 13. Mobile (iPhone/Pixel size): client portal overview
 - [ ] 14. Settings → Integrations showing Claude + PayPal Sandbox + webhooks configured
+- [ ] 15. Smart timeline (Bryntum Gantt): agreement group, dashed baseline, payment diamonds, "CR #1" phase, details panel open
+- [ ] 16. Smart timeline: "Explain schedule risk" result
+- [ ] 17. Financial Intelligence (AG Studio): Revenue overview with totals by currency and charts
+- [ ] 18. Financial Intelligence in Customize mode: AI Assistant answer ("Delegated to Data agent") next to widgets
+- [ ] 19. "Ask your finances" answer with cited figures
 
 Rules: use fictional data only; no "Simulated" badge may appear in screenshots labelled as live PayPal/Claude.

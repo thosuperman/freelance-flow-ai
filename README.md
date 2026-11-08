@@ -8,6 +8,8 @@ FreelanceFlow AI turns messy client conversations into clear agreements, approve
 
 Built for the [PayPal AI Hackathon 2026](https://paypalaihackathon.devpost.com/).
 
+**Try it:** <https://freelanceflow.hayaix.tech/demo> creates a private demo workspace (live Claude, PayPal Sandbox; no real money moves).
+
 ---
 
 ## What it does
@@ -22,6 +24,8 @@ Built for the [PayPal AI Hackathon 2026](https://paypalaihackathon.devpost.com/)
 | 6. Scope protection | A new client request is compared with the approved scope. The result cites the exact deliverables or exclusions (`D1`, `E4`…) it relied on. Out-of-scope work becomes a change request priced from the freelancer's hourly rate | AI explains, freelancer prices |
 | 7. Change approval | The client approves the change request. The original agreement is preserved, new scope items and a change-order milestone are added, and totals update | Client |
 | 8. Financials | Original contract, approved changes, revised value, paid and outstanding amounts. All derived from persisted records, never mixed across currencies | Deterministic code |
+| 9. Smart timeline | A Bryntum Gantt from approved milestones, PayPal payments and approved change requests: agreed baseline, payment dependencies, late and at-risk flags, and an AI schedule explanation that never moves commitments | Code computes, AI explains |
+| 10. Financial Intelligence | AG Studio dashboards (revenue, payment risk, scope-change impact) per currency, with Studio's agents running on Claude and a grounded "Ask your finances" | Code computes, AI explains |
 
 ## Quick start (local)
 
@@ -59,8 +63,9 @@ Next.js 16 (App Router, Turbopack) · TypeScript strict · Tailwind CSS 4 · sha
 - [docs/PAYPAL_INTEGRATION.md](docs/PAYPAL_INTEGRATION.md): which PayPal APIs are used and why, idempotency, webhooks, Sandbox procedure
 - [docs/AI_DESIGN.md](docs/AI_DESIGN.md): prompts, schemas, guardrails, simulated fallback
 - [docs/SECURITY.md](docs/SECURITY.md): threat model and controls
-- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md): Vercel + managed Postgres
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) and [docs/deployment/](docs/deployment/): AWS Lightsail production runbook
 - [docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md): guided demo for judges
+- [docs/sponsors/](docs/sponsors/): Bryntum, AG Grid (AG Studio) and APIMatic integrations, documented honestly
 - [submission/](submission/): Devpost package
 
 ## Status and limitations
@@ -69,6 +74,6 @@ See [submission/release-checklist.md](submission/release-checklist.md) for the h
 
 - ✅ Implemented and covered by automated tests: the whole workflow, authorization boundaries, payment idempotency, webhook verification paths and reconciliation.
 - ✅ **Verified live on 2026-11-07:** Claude extraction, proposal drafting and scope detection against the real API, and a genuine PayPal Sandbox checkout. In that checkout the $450.00 capture was confirmed with PayPal's API, and both webhooks were delivered, signature-verified and processed once. Details are in [docs/PAYPAL_INTEGRATION.md](docs/PAYPAL_INTEGRATION.md#manual-sandbox-verification) and [docs/AI_DESIGN.md](docs/AI_DESIGN.md#verification-status).
-- ⏳ Not deployed publicly yet. Deployment steps are documented.
+- ✅ Deployed at **https://freelanceflow.hayaix.tech** (AWS Lightsail, us-east-1) with live Claude and PayPal Sandbox. See [docs/deployment/](docs/deployment/).
 - Approvals are recorded as auditable consent; they are **not** qualified electronic signatures.
 - Single freelancer per workspace. Teams, organizations, subscriptions, other payment providers and other languages are architectural extension points, not features.

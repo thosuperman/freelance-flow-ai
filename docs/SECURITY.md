@@ -23,7 +23,7 @@
 - Errors: domain errors carry safe messages; unexpected errors are logged without payloads and shown generically.
 - Logging: no card data (PayPal handles it), no tokens, no secrets. PayPal errors log only status, issue and `debug_id`.
 - Security headers: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy`, HSTS; `poweredByHeader: false`.
-- Mock PayPal is refused when `VERCEL_ENV=production`; the mock approval endpoint returns 404 outside mock mode.
+- Mock PayPal is refused when `APP_ENV=production` or `VERCEL_ENV=production`; the mock approval endpoint returns 404 outside mock mode.
 - Demo workspaces are isolated per visitor, expire after 24 h and are deleted by a cron endpoint protected with `CRON_SECRET` (constant-time comparison).
 - Audit trail: append-only `AuditEvent` and `Approval` tables.
 
