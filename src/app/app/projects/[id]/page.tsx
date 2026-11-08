@@ -23,10 +23,13 @@ import { ScopePanel } from "@/components/ai/scope-panel";
 import { PaymentsPanel } from "@/components/payments/payments-panel";
 import { ActivityPanel } from "@/components/projects/activity-panel";
 import { EXAMPLE_SCOPE_CHANGE } from "@/features/demo/examples";
+import { buildTimeline } from "@/features/timeline/build";
+import { timelineSourceFor } from "@/features/timeline/service";
+import { TimelinePanel } from "@/components/timeline/timeline-panel";
 
 export const metadata: Metadata = { title: "Project" };
 
-const TABS = ["overview", "proposal", "scope", "payments", "activity"] as const;
+const TABS = ["overview", "proposal", "timeline", "scope", "payments", "activity"] as const;
 type Tab = (typeof TABS)[number];
 
 async function load(userId: string, id: string): Promise<ProjectDetail | null> {
@@ -118,6 +121,7 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
         </div>
       ) : null}
       {tab === "proposal" ? <ProposalPanel project={project} approvals={approvals} portal={portal} ai={{ simulated: ai.provider === "simulated" }} /> : null}
+      {tab === "timeline" ? <TimelinePanel projectId={id} timeline={buildTimeline(timelineSourceFor(project))} /> : null}
       {tab === "scope" ? <ScopePanel project={project} example={EXAMPLE_SCOPE_CHANGE} ai={{ simulated: ai.provider === "simulated" }} hourlyRate={user.profile.hourlyRate} /> : null}
       {tab === "payments" ? <PaymentsPanel project={project} /> : null}
       {tab === "activity" ? <ActivityPanel events={events} approvals={approvals} /> : null}

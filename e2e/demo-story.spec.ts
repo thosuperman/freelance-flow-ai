@@ -95,6 +95,7 @@ test("full demo story: conversation to paid deposit and approved change request"
   await expect(fin).toContainText("$450.00");
   await expect(fin).toContainText("$1,350.00");
 
+  const projectUrl = page.url().split("?")[0]!;
   await page.goto("/app");
   const totals = page.getByTestId("dashboard-totals-USD");
   await expect(totals).toContainText("$1,800.00");
@@ -103,5 +104,19 @@ test("full demo story: conversation to paid deposit and approved change request"
 
   await page.goto("/app/payments");
   await expect(page.getByTestId("payment-history-row")).toHaveCount(1);
+
+  // 11. Smart timeline (Bryntum Gantt) shows the approved change request as its own phase.
+  await page.goto(`${projectUrl}?tab=timeline`);
+  const gantt = page.getByTestId("smart-timeline");
+  await expect(gantt).toBeVisible({ timeout: 30_000 });
+  await expect(gantt).toContainText("Original agreement", { timeout: 30_000 });
+  await expect(gantt).toContainText("CR #1");
+  await expect(page.getByText("Approved changes").first()).toBeVisible();
+
+  // 12. Financial Intelligence (AG Studio) renders the same persisted figures.
+  await page.goto("/app/insights");
+  const studio = page.getByTestId("financial-studio");
+  await expect(studio).toContainText("Totals by currency", { timeout: 30_000 });
+  await expect(studio).toContainText("USD");
   await client.close();
 });

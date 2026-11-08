@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-const LABELS = { overview: "Overview", proposal: "Proposal", scope: "Scope & changes", payments: "Payments", activity: "Activity" } as const;
+const LABELS = { overview: "Overview", proposal: "Proposal", timeline: "Smart timeline", scope: "Scope & changes", payments: "Payments", activity: "Activity" } as const;
 
 export function ProjectTabs({ projectId, active, counts }: { projectId: string; active: keyof typeof LABELS; counts: { scope: number; payments: number } }) {
   return (

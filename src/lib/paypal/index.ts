@@ -1,6 +1,7 @@
 import "server-only";
 import { HttpPayPalGateway } from "./http-gateway";
 import { MockPayPalGateway } from "./mock-gateway";
+import { SdkPayPalGateway, createOrdersApi } from "./sdk-gateway";
 import type { PayPalGateway, PayPalMode } from "./types";
 
 export type PayPalConfig = {
@@ -14,7 +15,7 @@ export type PayPalConfig = {
 export function paypalConfig(): PayPalConfig {
   const raw = (process.env.PAYPAL_MODE ?? "sandbox").trim().toLowerCase();
   const mode: PayPalMode = raw === "live" ? "live" : raw === "mock" ? "mock" : "sandbox";
-  if (mode === "mock" && process.env.VERCEL_ENV === "production") {
+  if (mode === "mock" && (process.env.VERCEL_ENV === "production" || process.env.APP_ENV === "production")) {
     throw new Error("PAYPAL_MODE=mock is not allowed in production deployments");
   }
   const clientId = process.env.PAYPAL_CLIENT_ID?.trim() || null;
@@ -38,9 +39,16 @@ export function getPayPalGateway(): PayPalGateway {
     const id = process.env.PAYPAL_CLIENT_ID?.trim();
     const secret = process.env.PAYPAL_CLIENT_SECRET?.trim();
     if (!id || !secret) throw new Error("PayPal is not configured (PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET)");
-    gateway = new HttpPayPalGateway(cfg.mode, id, secret, process.env.PAYPAL_WEBHOOK_ID?.trim() || null);
+    const rest = new HttpPayPalGateway(cfg.mode, id, secret, process.env.PAYPAL_WEBHOOK_ID?.trim() || null);
+    // Orders go through the APIMatic-generated PayPal Server SDK by default; PAYPAL_ORDERS_CLIENT=rest
+    // switches back to the hand-written REST client. Webhook verification always uses REST.
+    gateway = ordersClient() === "rest" ? rest : new SdkPayPalGateway(cfg.mode, createOrdersApi(cfg.mode, id, secret), rest);
   }
   return gateway;
+}
+
+export function ordersClient(): "sdk" | "rest" {
+  return process.env.PAYPAL_ORDERS_CLIENT?.trim().toLowerCase() === "rest" ? "rest" : "sdk";
 }
 
 export function setPayPalGatewayForTests(g: PayPalGateway | null) {

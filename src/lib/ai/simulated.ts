@@ -31,6 +31,10 @@ export function simulatedGenerate(task: string, context: unknown): unknown {
       return simulateProposal(context as ProposalContext);
     case "compareScope":
       return simulateComparison(context as CompareContext);
+    case "explainTimeline":
+      return simulateTimelineInsight(context as TimelineInsightContext);
+    case "financialAnswer":
+      return simulateFinancialAnswer(context as FinancialAnswerContext);
     default:
       throw new Error(`Unknown simulated task: ${task}`);
   }
@@ -479,5 +483,50 @@ function simulateComparison(ctx: CompareContext): ScopeComparison {
       : items.length
         ? "Thanks! That's covered by our current agreement — I'll include it in the next revision."
         : "Thanks for the message! Could you share a bit more detail so I can confirm whether this is covered by our current agreement?",
+  };
+}
+
+// ───────────────────────────── timeline & finance ─────────────────────────────
+
+export type TimelineInsightContext = {
+  late: { name: string; dueDate: string }[];
+  affected: string[];
+  overduePayments: { milestoneTitle: string; amount: string; currency: string; dueDate: string }[];
+  changes: { number: number; title: string; extendsScheduleByDays: number }[];
+  endDate: string;
+  baselineEndDate: string | null;
+};
+
+function simulateTimelineInsight(c: TimelineInsightContext) {
+  const recs: string[] = [];
+  if (c.overduePayments.length) recs.push("Send the client a friendly reminder about the overdue payment before starting dependent work.");
+  if (c.late.length) recs.push("Update the client on the late phase and, if the date must move, propose a change request instead of changing it silently.");
+  if (c.changes.some((x) => x.extendsScheduleByDays > 0)) recs.push("Confirm the client understands that the approved change extends the delivery date.");
+  if (!recs.length) recs.push("No action needed: everything is on plan.");
+  const pay = c.overduePayments[0];
+  const headline = c.late.length || pay ? `${c.late.length} late phase(s), ${c.overduePayments.length} overdue payment(s)` : "On plan";
+  const parts = [
+    c.late.length ? `Late: ${c.late.map((l) => `${l.name} (due ${l.dueDate})`).join(", ")}.` : "No phase is late.",
+    c.affected.length ? `${c.affected.length} downstream item(s) are affected.` : "",
+    pay ? `${pay.milestoneTitle} (${pay.amount} ${pay.currency}) was due ${pay.dueDate}.` : "",
+    `Planned finish: ${c.endDate}${c.baselineEndDate && c.baselineEndDate !== c.endDate ? ` (agreed: ${c.baselineEndDate})` : ""}.`,
+  ];
+  return {
+    headline,
+    explanation: parts.filter(Boolean).join(" "),
+    recommendations: recs.slice(0, 4),
+    clientMessage: pay ? `Hi! Just a quick heads-up that the ${pay.milestoneTitle.toLowerCase()} payment of ${pay.amount} ${pay.currency} was due on ${pay.dueDate}. You can pay it from your project portal whenever you're ready. Thanks!` : null,
+  };
+}
+
+export type FinancialAnswerContext = { question: string; facts: { id: string; label: string; value: string }[] };
+
+function simulateFinancialAnswer(c: FinancialAnswerContext) {
+  const words = c.question.toLowerCase().split(/[^a-z]+/).filter((w) => w.length > 3);
+  const hits = c.facts.filter((f) => words.some((w) => f.label.toLowerCase().includes(w))).slice(0, 6);
+  const used = hits.length ? hits : c.facts.slice(0, 4);
+  return {
+    answer: used.length ? used.map((f) => `${f.label}: ${f.value}.`).join(" ") : "There is no financial data yet.",
+    citedIds: used.map((f) => f.id),
   };
 }

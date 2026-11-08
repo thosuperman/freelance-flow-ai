@@ -11,7 +11,7 @@ import { simulatedGenerate } from "./simulated";
  */
 export type AITask<T> = {
   /** Logical task name — used by the simulated provider to pick a heuristic. */
-  task: "extractProject" | "draftProposal" | "compareScope";
+  task: "extractProject" | "draftProposal" | "compareScope" | "explainTimeline" | "financialAnswer";
   schema: z.ZodType<T>;
   system: string;
   user: string;

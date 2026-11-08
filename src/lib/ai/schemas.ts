@@ -132,3 +132,17 @@ export const ScopeComparisonSchema = z.object({
     .describe("Short, friendly, professional reply the freelancer could send. Do not quote prices."),
 });
 export type ScopeComparison = z.infer<typeof ScopeComparisonSchema>;
+
+export const TimelineInsightSchema = z.object({
+  headline: z.string().min(1).max(160),
+  explanation: z.string().min(1).max(900),
+  recommendations: z.array(z.string().min(1).max(300)).max(4),
+  clientMessage: z.string().max(900).nullable(),
+});
+export type TimelineInsight = z.infer<typeof TimelineInsightSchema>;
+
+export const FinancialAnswerSchema = z.object({
+  answer: z.string().min(1).max(1200),
+  citedIds: z.array(z.string().max(64)).max(20),
+});
+export type FinancialAnswer = z.infer<typeof FinancialAnswerSchema>;
