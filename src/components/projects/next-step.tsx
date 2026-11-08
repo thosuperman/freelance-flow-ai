@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CircleCheckBig, Clock, ExternalLink, Lightbulb } from "lucide-react";
+import { ArrowRight, BarChart3, CalendarRange, CircleCheckBig, Clock, ExternalLink, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/money";
 import { paymentEligibility } from "@/features/milestones/rules";
@@ -58,11 +58,12 @@ function decide(p: ProjectDetail, portal: string | null): Step {
 
 export function NextStep({ project, portal, tour }: { project: ProjectDetail; portal: string | null; tour: boolean }) {
   const s = decide(project, portal);
+  const hasMilestones = project.milestones.length > 0;
   const Icon = s.tone === "done" ? CircleCheckBig : s.tone === "waiting" ? Clock : Lightbulb;
   return (
     <div
       data-testid="next-step"
-      className="flex flex-col gap-3 rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50/80 via-white to-white p-4 sm:flex-row sm:items-center sm:justify-between"
+      className="flex flex-col gap-3 rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50/80 via-white to-white p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
     >
       <div className="flex gap-3">
         <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-primary shadow-sm ring-1 ring-indigo-100">
@@ -86,6 +87,16 @@ export function NextStep({ project, portal, tour }: { project: ProjectDetail; po
             </Link>
           )}
         </Button>
+      ) : null}
+      {hasMilestones ? (
+        <div className="flex flex-wrap gap-2 sm:basis-full sm:order-last" data-testid="feature-links">
+          <Link href={`/app/projects/${project.id}?tab=timeline`} className="inline-flex items-center gap-1.5 rounded-full border bg-white px-3 py-1 text-xs font-medium text-primary hover:bg-indigo-50">
+            <CalendarRange className="size-3.5" /> Smart timeline
+          </Link>
+          <Link href="/app/insights" className="inline-flex items-center gap-1.5 rounded-full border bg-white px-3 py-1 text-xs font-medium text-primary hover:bg-indigo-50">
+            <BarChart3 className="size-3.5" /> Financial Intelligence
+          </Link>
+        </div>
       ) : null}
     </div>
   );
