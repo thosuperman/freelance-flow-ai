@@ -23,6 +23,7 @@ The server reads `/opt/freelanceflow/.env.production` (mode `600`, owner `ubuntu
 | `PAYPAL_ORDERS_CLIENT` | unset (`sdk`) | Orders via the PayPal Server SDK (default) or `rest` for the hand-written client |
 | `PAYPAL_WEBHOOK_ID` | `12324755VH551593N` | The production webhook (separate from the ngrok one used locally) |
 | `DEMO_MODE_ENABLED` | `true` | Enables `/demo` |
+| `DEMO_PAYPAL_BUYER_EMAIL` / `DEMO_PAYPAL_BUYER_PASSWORD` | Sandbox Personal buyer | Shown to reviewers on `/demo`, the judge walkthrough and the payment page; only when `PAYPAL_MODE=sandbox` and the email is a `*.example.com` Sandbox address |
 | `DEMO_RATE_LIMIT_PER_HOUR` | `8` | New demo workspaces per IP per hour |
 | `CRON_SECRET` | random | Protects `/api/cron/cleanup-demo`; the cron job reads it from inside the container |
 

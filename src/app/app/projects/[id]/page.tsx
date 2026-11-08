@@ -28,6 +28,7 @@ import { timelineSourceFor } from "@/features/timeline/service";
 import { TimelinePanel } from "@/components/timeline/timeline-panel";
 import { JudgeWalkthrough } from "@/components/demo/judge-walkthrough";
 import { JUDGE_PROJECT_TITLE } from "@/features/demo/judge-seed";
+import { sandboxBuyer } from "@/features/demo/sandbox-buyer";
 
 export const metadata: Metadata = { title: "Project" };
 
@@ -111,7 +112,7 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
         }
       />
 
-      {user.profile.isDemo && project.title === JUDGE_PROJECT_TITLE ? <JudgeWalkthrough project={project} portal={portal} /> : <NextStep project={project} portal={portal} tour={sp.tour === "1"} />}
+      {user.profile.isDemo && project.title === JUDGE_PROJECT_TITLE ? <JudgeWalkthrough project={project} portal={portal} buyer={sandboxBuyer()} /> : <NextStep project={project} portal={portal} tour={sp.tour === "1"} />}
       <FinancialSummary fin={fin} currency={project.currency} />
 
       <ProjectTabs projectId={id} active={tab} counts={{ scope: project.changeRequests.filter((c) => c.status === "PENDING_CLIENT").length, payments: project.paymentRequests.filter((p) => p.status === "OPEN").length }} />

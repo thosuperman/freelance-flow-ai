@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { CheckCircle2, Circle, ExternalLink, RotateCcw } from "lucide-react";
 import type { ProjectDetail } from "@/features/projects/service";
+import { SandboxBuyerCard } from "./sandbox-buyer-card";
 
 /**
  * Step-by-step guide shown on the pre-filled judge project. Each step's tick comes from persisted
  * records (a verified PayPal capture, an approved change request, a stored AI scope analysis),
  * never from clicks.
  */
-export function JudgeWalkthrough({ project, portal }: { project: ProjectDetail; portal: string | null }) {
+export function JudgeWalkthrough({ project, portal, buyer }: { project: ProjectDetail; portal: string | null; buyer: { email: string; password: string } | null }) {
   const base = `/app/projects/${project.id}`;
   const deposit = project.milestones.find((m) => m.kind === "DEPOSIT");
   const paid = deposit?.paymentStatus === "PAID";
@@ -24,7 +25,7 @@ export function JudgeWalkthrough({ project, portal }: { project: ProjectDetail; 
     {
       done: paid,
       title: "Pay the $450 deposit with PayPal Sandbox",
-      body: "Open the client portal → Pay with PayPal → log in with the Sandbox buyer account from the testing instructions. The deposit is marked paid only after the server captures and verifies it with PayPal.",
+      body: "Open the client portal → Pay with PayPal → log in with the PayPal Sandbox buyer shown here. The deposit is marked paid only after the server captures and verifies it with PayPal.",
       href: portal ?? undefined,
       external: true,
       cta: "Open client portal",
@@ -66,6 +67,7 @@ export function JudgeWalkthrough({ project, portal }: { project: ProjectDetail; 
           <RotateCcw className="size-3.5" /> Start over
         </Link>
       </div>
+      {buyer ? <div className="mt-3"><SandboxBuyerCard buyer={buyer} compact /></div> : null}
       <ol className="mt-3 space-y-2">
         {steps.map((s, i) => (
           <li key={s.title} className="flex gap-3 rounded-xl border bg-white p-3 text-sm">

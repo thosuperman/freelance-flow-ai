@@ -9,7 +9,7 @@
    - It opens a project that already has an approved proposal, a **$450 deposit ready to pay**, and a **pending change request**.
 2. Follow the yellow **Judge walkthrough** card at the top of the project. Each step ticks off from real records.
    - **Pay the deposit:** click **Open client portal**, then **Pay with PayPal**.
-     - Log in with the **PayPal Sandbox buyer account** from the submission's testing instructions, and approve the payment.
+     - Log in with the **PayPal Sandbox buyer** shown on the page (email and password with copy buttons), and approve the payment.
      - Expected result: you return to a receipt showing a **PayPal capture ID** and "PayPal Sandbox". Back on the project, *Payments received* shows **$450.00**.
      - The server marks it paid only after PayPal confirms the capture.
    - **Approve the change request:** in the client portal, tick the consent box on change request #1 and approve it. The project total becomes **$1,800.00**.
@@ -28,7 +28,7 @@ On `/demo`, click **Start my demo workspace** instead. Paste or keep the example
 | --- | --- |
 | Freelancer | The demo workspace you are signed into |
 | Client | The **Client portal** link on the project (opens in a new tab; no login) |
-| PayPal buyer | The Sandbox buyer account from the testing instructions |
+| PayPal buyer | The Sandbox buyer login shown on `/demo`, on the walkthrough card and on the payment page |
 
 ## Restarting
 
@@ -48,7 +48,7 @@ Several judges can use the **same** Sandbox buyer account at the same time. Each
 | Problem | Fix |
 | --- | --- |
 | The PayPal popup is blocked | Allow pop-ups for freelanceflow.hayaix.tech, then click **Pay with PayPal** again |
-| PayPal asks for a password you don't have | Use the Sandbox buyer from the testing instructions, not a real PayPal login |
+| PayPal asks for a password you don't have | Use the Sandbox buyer shown on the payment page, not a real PayPal login. If it was changed by someone, use the backup buyer from the testing instructions |
 | You closed the popup after approving | Reload the receipt or project page: the app checks the order with PayPal and records the capture if it went through |
 | Timeline or analytics shows "Loading…" | The first visit downloads about 2 MB; wait a few seconds |
 | "Too many demo workspaces" | The per-network hourly limit was reached; wait or use an existing workspace |
