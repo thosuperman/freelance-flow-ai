@@ -29,8 +29,8 @@ Built for the [PayPal AI Hackathon 2026](https://paypalaihackathon.devpost.com/)
 
 ## For judges: testing the live demo
 
-1. Open **https://freelanceflow.hayaix.tech/demo** and click **Start my demo workspace**. No account or password is needed, and each visitor gets a private workspace for 24 hours.
-2. Follow the 12 steps on that page. The guided "Next step" card on each project leads the way, and AI runs on live Claude.
+1. Open **https://freelanceflow.hayaix.tech/demo** and click **Try the full demo**. No account or password is needed: you get a private 24-hour workspace with an approved proposal, a payment-ready $450 deposit and a pending change request. To start from a client message instead, use **Start my demo workspace**.
+2. Follow the **Judge walkthrough** card (see [submission/JUDGE_DEMO_GUIDE.md](submission/JUDGE_DEMO_GUIDE.md)). AI runs on live Claude.
 3. To pay as the client, open the client portal link from the project, click **Pay with PayPal**, and sign in with a **PayPal Sandbox Personal (buyer) account**. The submission's testing instructions give a dedicated Sandbox buyer login, or use your own from developer.paypal.com → Testing Tools → Sandbox Accounts. No real money moves.
 4. The **Smart timeline** tab (Bryntum Gantt) and **Financial Intelligence** in the sidebar (AG Studio) show the same records.
 

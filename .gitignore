@@ -56,3 +56,6 @@ next-env.d.ts
 # local build outputs for deployment
 /.next-deploy/
 /.next-memtest/
+
+# filled-in judge credentials (never commit)
+/submission/JUDGE_CREDENTIALS.md

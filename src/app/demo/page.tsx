@@ -60,8 +60,18 @@ export default function DemoPage() {
               Step 6 requires a PayPal Sandbox personal (buyer) account. Payment is only marked as received after PayPal confirms the capture.
             </p>
           ) : null}
-          <div className="mt-6">
-            <StartDemoButton />
+          <div className="mt-6 space-y-4">
+            <div className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-4">
+              <p className="text-sm font-semibold">Short on time? Start pre-filled</p>
+              <p className="mb-3 mt-1 text-sm text-muted-foreground">
+                Opens a private project that already has an approved proposal, a $450 deposit ready to pay with PayPal Sandbox, and a pending change request. Takes about two minutes.
+              </p>
+              <StartDemoButton full />
+            </div>
+            <div>
+              <p className="mb-2 text-sm text-muted-foreground">Or walk the whole story from a client message, starting with AI extraction:</p>
+              <StartDemoButton variant="outline" />
+            </div>
           </div>
         </div>
         <ol className="space-y-2">
