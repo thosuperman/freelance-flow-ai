@@ -1,0 +1,112 @@
+1
+00:00:00,150 --> 00:00:04,350
+Freelancers lose time chasing agreements and payments.
+
+2
+00:00:04,400 --> 00:00:08,920
+And when clients ask for extra work, it often goes unpaid.
+
+3
+00:00:08,970 --> 00:00:16,000
+FreelanceFlow AI keeps it all connected, from the first conversation to the final payment.
+
+4
+00:00:17,350 --> 00:00:19,800
+Here is a real client message.
+
+5
+00:00:19,850 --> 00:00:26,140
+A landing page, a fifteen hundred dollar budget, and thirty percent upfront.
+
+6
+00:00:26,190 --> 00:00:30,640
+With one click, AI turns it into a structured project.
+
+7
+00:00:30,690 --> 00:00:37,480
+Deliverables, a timeline, and two milestones: a four hundred fifty dollar deposit,
+
+8
+00:00:37,530 --> 00:00:41,320
+and a one thousand fifty dollar final payment.
+
+9
+00:00:41,370 --> 00:00:46,570
+Nothing is agreed until the freelancer reviews it and confirms.
+
+10
+00:00:47,920 --> 00:00:54,390
+AI drafts the proposal wording, while the prices come straight from the milestones.
+
+11
+00:00:54,440 --> 00:00:56,510
+Sending it locks the terms.
+
+12
+00:00:56,560 --> 00:01:01,620
+The client opens a private link, and approves that exact version.
+
+13
+00:01:02,970 --> 00:01:06,140
+Now the freelancer requests the deposit.
+
+14
+00:01:06,190 --> 00:01:10,650
+The client pays with PayPal, here in the PayPal Sandbox.
+
+15
+00:01:10,700 --> 00:01:16,850
+FreelanceFlow confirms the payment with PayPal before marking it as received.
+
+16
+00:01:16,900 --> 00:01:20,160
+The receipt shows the PayPal capture ID,
+
+17
+00:01:20,210 --> 00:01:25,150
+and the project now shows four hundred fifty dollars received.
+
+18
+00:01:26,500 --> 00:01:31,040
+Later, the client asks: can you also add a booking system?
+
+19
+00:01:31,090 --> 00:01:36,030
+FreelanceFlow compares the request with the approved agreement.
+
+20
+00:01:36,080 --> 00:01:42,130
+It points to the exact terms it relied on, and explains why this is new work.
+
+21
+00:01:42,180 --> 00:01:46,480
+The freelancer sets the price at three hundred dollars.
+
+22
+00:01:47,830 --> 00:01:50,090
+The client approves the change.
+
+23
+00:01:50,140 --> 00:01:56,360
+The project is now worth eighteen hundred dollars, with four hundred fifty received,
+
+24
+00:01:56,410 --> 00:01:59,280
+and thirteen hundred fifty outstanding.
+
+25
+00:01:59,330 --> 00:02:04,500
+The timeline and the financial dashboard update from the same records.
+
+26
+00:02:05,850 --> 00:02:11,930
+With FreelanceFlow AI, freelancers spend less time on admin, protect their scope,
+
+27
+00:02:11,980 --> 00:02:14,050
+and get paid through PayPal.
+
+28
+00:02:14,100 --> 00:02:19,880
+From the first conversation to the final payment, everything stays connected.
+
