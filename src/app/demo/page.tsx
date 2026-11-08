@@ -18,6 +18,8 @@ const FLOW = [
   "Generate a change request with AI",
   "Approve the change as the client",
   "Review the updated financial totals",
+  "See the change on the Smart timeline (Bryntum Gantt)",
+  "Explore Financial Intelligence (AG Studio + Claude)",
 ];
 
 export default function DemoPage() {
