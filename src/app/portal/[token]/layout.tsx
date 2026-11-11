@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import { getPortalGrant } from "@/features/portal/service";
+import { LegalLinks } from "@/components/legal/legal";
 import { LogoMark } from "@/components/shared/logo";
 
 export const metadata: Metadata = { title: "Client portal", robots: { index: false, follow: false } };
@@ -29,8 +30,11 @@ export default async function PortalLayout({ children, params }: LayoutProps<"/p
       </header>
       <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6">{children}</main>
       <footer className="border-t py-5">
-        <div className="mx-auto flex max-w-4xl items-center justify-center gap-2 px-4 text-xs text-muted-foreground">
-          <LogoMark className="size-5" /> Powered by FreelanceFlow AI · Payments processed by PayPal
+        <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-2 px-4 text-xs text-muted-foreground sm:flex-row sm:gap-4">
+          <span className="flex items-center gap-2">
+            <LogoMark className="size-5" /> Powered by FreelanceFlow AI · Payments processed by PayPal
+          </span>
+          <LegalLinks />
         </div>
       </footer>
     </div>
