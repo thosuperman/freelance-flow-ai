@@ -6,6 +6,7 @@ import { Logo } from "@/components/shared/logo";
 import { StartDemoButton } from "@/components/demo/start-demo-button";
 import { SandboxBuyerCard } from "@/components/demo/sandbox-buyer-card";
 import { sandboxBuyer } from "@/features/demo/sandbox-buyer";
+import { LegalLinks } from "@/components/legal/legal";
 
 export const metadata: Metadata = { title: "Experience FreelanceFlow AI" };
 // Reads runtime configuration (AI provider, PayPal mode, optional Sandbox buyer), so render per request.
@@ -89,6 +90,12 @@ export default function DemoPage() {
           ))}
         </ol>
       </main>
+      <footer className="border-t py-5 text-xs text-muted-foreground">
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-2 px-4 sm:flex-row sm:px-6">
+          <span>Demo workspaces are deleted after 24 hours. AI output can be wrong; payments are PayPal Sandbox only.</span>
+          <LegalLinks />
+        </div>
+      </footer>
     </div>
   );
 }

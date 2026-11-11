@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LegalLinks } from "@/components/legal/legal";
 import { Logo } from "@/components/shared/logo";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
@@ -12,6 +13,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </Link>
       </header>
       <main className="relative flex flex-1 items-start justify-center px-4 pb-16 pt-8 sm:pt-16">{children}</main>
+      <footer className="relative border-t py-5">
+        <LegalLinks className="justify-center text-xs text-muted-foreground" />
+      </footer>
     </div>
   );
 }

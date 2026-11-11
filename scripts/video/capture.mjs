@@ -21,14 +21,14 @@ const newCtx = () => browser.newContext({ baseURL: BASE, viewport: { width: W, h
 const freelancer = await newCtx();
 const client = await newCtx();
 const events = {};
-let current = null;
+
 
 async function segment(name, ctx, fn) {
   const page = await ctx.newPage();
   const t0 = Date.now();
   const mark = (label) => (events[name].marks[label] = (Date.now() - t0) / 1000);
   events[name] = { marks: {} };
-  current = name;
+
   console.log(`▶ ${name}`);
   await fn(page, mark);
   mark("end");

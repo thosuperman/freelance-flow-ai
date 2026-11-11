@@ -67,3 +67,4 @@ next-env.d.ts
 /submission/video/audio/
 /submission/video/narration.wav
 /submission/video/captions.json
+/submission/judge-package.zip

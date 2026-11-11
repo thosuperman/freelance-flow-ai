@@ -90,6 +90,19 @@ export function AuthForm({ mode, next }: { mode: "sign-in" | "sign-up"; next: st
           {form.formState.isSubmitting ? <Loader2 className="animate-spin" /> : null}
           {isSignUp ? "Create account" : "Sign in"}
         </Button>
+        {isSignUp ? (
+          <p className="text-center text-xs text-muted-foreground">
+            By creating an account you agree to the{" "}
+            <Link href="/terms" className="underline underline-offset-2">
+              Terms
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="underline underline-offset-2">
+              Privacy Policy
+            </Link>
+            .
+          </p>
+        ) : null}
       </form>
       <p className="mt-4 text-center text-sm text-muted-foreground">
         {isSignUp ? "Already have an account? " : "New to FreelanceFlow? "}

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/logo";
+import { LegalLinks } from "@/components/legal/legal";
 import { getCurrentUser } from "@/features/auth/session";
 
 const STEPS = [
@@ -211,8 +212,8 @@ export default async function LandingPage() {
 
       <footer className="border-t py-6">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 text-xs text-muted-foreground sm:flex-row sm:px-6">
-          <span>© 2026 FreelanceFlow AI. Hackathon MVP — not legal or financial advice.</span>
-          <span>AI understands the work. Humans approve the agreement. PayPal handles the payment.</span>
+          <span>© 2026 FreelanceFlow AI · Hackathon project · PayPal Sandbox, not legal or financial advice.</span>
+          <LegalLinks />
         </div>
       </footer>
     </div>
